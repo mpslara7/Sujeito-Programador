@@ -9,14 +9,13 @@ interface ActiveLinkProps extends LinkProps {
 }
 
 export function ActiveLink ({ children, activeClassName, ...rest }: ActiveLinkProps){
-  const { asPath } = useRouter(); // Ele representa a rota que estamos
+  const { asPath } = useRouter();
 
   const className = asPath === rest.href ? activeClassName : '';
-  // Se a rota que estamos a acessando for igual ao link que ele clicou ativamos o activeClassName
 
   return(
     <Link {...rest}>
-      {cloneElement(children, { // Usamos cloneElement para clonar nosso elemento children e acrescentar a variavel className que contem nossa logica condicional para ativação do activeClassName
+      {cloneElement(children, {
         className
       })}
     </Link>
