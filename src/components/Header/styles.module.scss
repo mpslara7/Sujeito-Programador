@@ -1,8 +1,8 @@
 
 .headerContainer{
   height: 6rem;
-  border-bottom: 1px solid var(--grey-200);
-  background: var(--grey-700);
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-700);
 }
 
 .headerContent{
@@ -21,28 +21,29 @@
   nav{
     margin-left: 5rem;
     height: 6rem;
-  }
 
-  a{
-    display: inline-block;
-    position: relative;
-    padding: 0 0.5rem;
-    height: 6rem;
-    line-height: 6rem;
-    color: var(--grey-100);
-    transition: color 0.2s;
+    a{
+      display: inline-block;
+      position: relative;
+      padding: 0 0.5rem;
+      height: 6rem;
+      line-height: 6rem;
+      color: var(--gray-100);
+      transition: color 0.2s;
 
-    & + a {  /* hack para aplicar em todos, MENOS no primeiro */
-      margin: 2rem;
-    }
+      & + a {  /* hack para aplicar em todos, MENOS no primeiro */
+        margin-left: 2rem;
+      }
 
-    &:hover{ /* hack para quando passar em cima dele ficar com a cor selecionada */
-      color: var(--white)
-    }
+      &:hover{ /* hack para quando passar em cima dele ficar com a cor selecionada */
+        color: var(--white)
+      }
 
-    &.active{
-      color: var(--yellow-500);
-      font-weight: bold;
+      &.active{
+        color: var(--yellow-500);
+        font-weight: bold;
+      }
+
     }
   }
 }
@@ -56,6 +57,7 @@
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: var(--white);
   font-weight: bold;
   transition: filter 0.2s;
@@ -74,17 +76,15 @@
   .headerContent{
     display: flex;
     flex-direction: column;
-  }
 
-  nav{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    nav{
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-  .readyButton{
-    display: none;
+    .readyButton{
+      display: none;
+    }
   }
 }
-
-

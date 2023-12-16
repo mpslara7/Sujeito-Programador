@@ -3,8 +3,29 @@ import styles from '../styles/home.module.scss'
 
 import Image from 'next/image';
 import techsImage from '../../public/images/techs.svg'
+import { GetStaticProps } from 'next';
 
-export default function Home() {
+import { getPrismicClient } from '../services/prismic';
+import * as PrismicR from '@prismicio/client';
+
+type Content = {
+  title: string,
+  subTitle: string,
+  linkAction: string,
+  mobile: string,
+  mobileContent: string,
+  mobileBanner: string,
+  titleWeb: string,
+  webContent: string,
+  webBanner: string,
+}
+
+interface ContentProps{
+  content: Content;
+}
+
+export default function Home({ content }: ContentProps) {
+  console.log(content);
   return (
     <>
       <Head>
@@ -66,3 +87,37 @@ export default function Home() {
     </>
 )
 };
+
+
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = await getPrismicClient();
+
+  const resp = await prismic.getSingle('home');
+
+  const {
+    title, sub_title, link_action,
+    mobile, mobile_content, mobile_banner,
+    title_web, web_content, web_banner
+  } = resp.data;
+
+  const content = {
+    title: PrismicR.asText(title),
+    subTitle: PrismicR.asText(sub_title),
+    linkAction: link_action.url,
+    mobile: PrismicR.asText(mobile),
+    mobileContent: PrismicR.asText(mobile_content),
+    mobileBanner: PrismicR.asText(mobile_banner),
+    titleWeb: PrismicR.asText(title_web),
+    webContent: PrismicR.asText(web_content),
+    webBanner: web_banner.url,
+  };
+
+  // console.log(resp.data);
+
+  return{
+    props:{
+      content
+    },
+    revalidate: 60 * 2 // A cada dois minutos
+  }
+}

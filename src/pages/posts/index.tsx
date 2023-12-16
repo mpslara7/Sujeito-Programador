@@ -17,7 +17,7 @@ export default function Posts(){
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <Link href='/'>
+          <Link legacyBehavior href='/'>
             <a>
               <Image
                 src={thumbImg}
