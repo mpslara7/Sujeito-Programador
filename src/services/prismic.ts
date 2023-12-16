@@ -1,9 +1,18 @@
-import Prismic from '@prismicio/client'
+import * as prismic from '@prismicio/client';
 
-export function getPrismicClient(req?: unknown){
-  const prismic = Prismic.client('https://blogdevelop.cdn.prismic.io/api/v2', {
-    req,
-  })
+export async function getPrismicClient(req?: unknown){
+  const routes = [
+    {
+      type: 'home',
+      path: '/:uid',
+    },
+  ]
+  const repoName = 'blogdevelop';
 
-  return prismic;
+  const client = prismic.createClient(repoName,{routes, fetch})
+
+  console.log(client);
+
+  return client;
 }
+
