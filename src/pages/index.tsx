@@ -10,12 +10,12 @@ import * as PrismicR from '@prismicio/client';
 
 type Content = {
   title: string,
-  subTitle: string,
+  titleContent: string,
   linkAction: string,
-  mobile: string,
+  mobileTitle: string,
   mobileContent: string,
   mobileBanner: string,
-  titleWeb: string,
+  webTitle: string,
   webContent: string,
   webBanner: string,
 }
@@ -34,9 +34,9 @@ export default function Home({ content }: ContentProps) {
       <main className={styles.container}>
         <div className={styles.containerHeader}>
           <section className={styles.ctaText}>
-            <h1>Levando voçê para o proximo nivel!!</h1>
-            <span>Uma plataforma que te leva para o proximo nivel</span>
-            <a>
+            <h1>{content.title}</h1>
+            <span>{content.titleContent}</span>
+            <a href={content.linkAction}>
               <button>
                 COMEÇAR AGORA !
               </button>
@@ -52,11 +52,11 @@ export default function Home({ content }: ContentProps) {
 
         <div className={styles.sectionContent}>
           <section>
-            <h2>Aprenda a criar aplicativos para android e IOS</h2>
-            <span>Você vai descobrir o jeito mais moderno de desenvolver apps nativos para iOS e Android, construindo aplicativos do zero até aplicativos.</span>
+            <h2>{content.mobileTitle}</h2>
+            <span>{content.mobileContent}</span>
           </section>
 
-          <img src='/images/financasApp.png'
+          <img src={content.mobileBanner}
                alt='Conteúdos desenvolvimento de apps'
           />
         </div>
@@ -64,12 +64,12 @@ export default function Home({ content }: ContentProps) {
         <hr className={styles.divisor}/>
 
         <div className={styles.sectionContent}>
-          <img src='/images/webDev.png'
+          <img src={content.webBanner}
                alt='Conteúdos desenvolvimento de aplicações web'
           />
 
           <section>
-            <h2>Aprenda criar sistemas web</h2>
+            <h2>{content.webTitle}</h2>
             <span>Criar sistemas web, sites usando as tecnologias mais modernas e requisitadas pelo mercado.</span>
           </section>
         </div>
@@ -78,7 +78,7 @@ export default function Home({ content }: ContentProps) {
           <Image src={techsImage} alt='Tecnologias'/>
           <h2>Mais de <span className={styles.alunos}>15 mil</span> já levaram sua carreira ao próximo nivel.</h2>
           <span>E você vai perder a chance de evoluir de uma vez por todas?</span>
-          <a>
+          <a href={content.linkAction}>
             <button>ACESSAR AGORA!</button>
           </a>
         </div>
@@ -95,24 +95,24 @@ export const getStaticProps: GetStaticProps = async () => {
   const resp = await prismic.getSingle('home');
 
   const {
-    title, sub_title, link_action,
-    mobile, mobile_content, mobile_banner,
-    title_web, web_content, web_banner
+    title, title_content, link_action,
+    mobile_title, mobile_content, mobile_banner,
+    web_title, web_content, web_banner
   } = resp.data;
 
   const content = {
     title: PrismicR.asText(title),
-    subTitle: PrismicR.asText(sub_title),
+    titleContent: PrismicR.asText(title_content),
     linkAction: link_action.url,
-    mobile: PrismicR.asText(mobile),
+    mobileTitle: PrismicR.asText(mobile_title),
     mobileContent: PrismicR.asText(mobile_content),
-    mobileBanner: PrismicR.asText(mobile_banner),
-    titleWeb: PrismicR.asText(title_web),
+    mobileBanner: mobile_banner.url,
+    webTitle: PrismicR.asText(web_title),
     webContent: PrismicR.asText(web_content),
     webBanner: web_banner.url,
   };
 
-  // console.log(resp.data);
+  console.log(resp.data);
 
   return{
     props:{
