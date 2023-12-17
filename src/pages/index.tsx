@@ -25,7 +25,7 @@ interface ContentProps{
 }
 
 export default function Home({ content }: ContentProps) {
-  console.log(content);
+  // console.log(content);
   return (
     <>
       <Head>
@@ -112,7 +112,7 @@ export const getStaticProps: GetStaticProps = async () => {
     webBanner: web_banner.url,
   };
 
-  console.log(resp.data);
+  // console.log(resp.data);
 
   return{
     props:{
