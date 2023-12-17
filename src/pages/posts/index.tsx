@@ -23,11 +23,56 @@ type Post = {
 
 interface PostsProps{
   posts: Post[];
+  page: string;
+  totalPage: string;
 }
 
-export default function Posts({posts: postsBlog}: PostsProps){
+export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
 
+  const [currentPage, setCurrentPage] = useState(Number(page));
   const [posts, setPosts] = useState(postsBlog || []);
+
+  async function reqPost(pageNumber: number){
+    const prismic = await getPrismicClient();
+
+    const resp = await prismic.getByType('post', {
+      orderings: {
+        field: 'document.last_publication_data',
+        direction: 'desc',
+      },
+      fetchLinks: ['post.title', 'post.cover', 'post.description'],
+      pageSize: 3,
+      page: pageNumber,
+    });
+
+    return resp;
+  }
+
+  const navigatePage = async (pageNumber: number) => {
+    const resp = await reqPost(pageNumber);
+
+    if(resp.results.length === 0){
+      return;
+    }
+
+    const getPosts = resp.results.map(post => {
+      return {
+        slug: post.uid as string,
+        title: PrismicR.asText(post.data.title) as string,
+        description: (post.data.description.find((content: {type: string}) => content.type === 'paragraph') as {text?: string})?.text ?? '',
+        cover: (post.data.cover as { url?: string}).url ?? '',
+        updateAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        })
+      }
+    })
+
+    setCurrentPage(pageNumber);
+    setPosts(getPosts);
+
+  }
 
   return (
     <>
@@ -54,26 +99,32 @@ export default function Posts({posts: postsBlog}: PostsProps){
               <p>{post.description}</p>
             </a>
           </Link>
-
           ))}
-          <div className={styles.buttonNavigate}>
-            <div>
-              <button>
-                <FiChevronLeft size={25} color='#fff'/>
-              </button>
-              <button>
-                <FiChevronsLeft size={25} color='#fff'/>
-              </button>
-            </div>
-            <div>
-              <button>
-                <FiChevronRight size={25} color='#fff'/>
-              </button>
 
-              <button>
-                <FiChevronsRight size={25} color='#fff'/>
-              </button>
+          <div className={styles.buttonNavigate}>
+            { Number(currentPage) >= 2 && (
+              <div>
+                <button onClick={ () => navigatePage(1)}>
+                  <FiChevronLeft size={25} color='#fff'/>
+                </button>
+                <button onClick={ () => navigatePage(Number(currentPage - 1)) }>
+                  <FiChevronsLeft size={25} color='#fff'/>
+                </button>
+              </div>
+            )}
+
+            { Number(currentPage) < Number(totalPage) && (
+              <div>
+                <button onClick={ () => navigatePage(Number(currentPage + 1)) }>
+                  <FiChevronRight size={25} color='#fff'/>
+                </button>
+
+                <button onClick={ () => navigatePage(Number(totalPage))}>
+                  <FiChevronsRight size={25} color='#fff'/>
+                </button>
             </div>
+            )}
+
           </div>
         </div>
       </main>
@@ -85,23 +136,22 @@ export default function Posts({posts: postsBlog}: PostsProps){
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = await getPrismicClient();
 
-  const resp = await prismic.getAllByType('post', {
+  const resp = await prismic.getByType('post', {
     orderings: {
-      field: 'last_publication_data',
+      field: 'document.last_publication_data',
       direction: 'desc',
     },
-    fetch: ['post.title', 'post.cover', 'post.description'],
-    pageSize: 2
+    fetchLinks: ['post.title', 'post.cover', 'post.description'],
+    pageSize: 2,
+    page: 1
   });
 
-  //console.log(JSON.stringify(resp, null, 2));
-
-  const posts = resp.map(post => {
+  const posts = resp.results.map(post => {
     return {
       slug: post.uid,
       title: PrismicR.asText(post.data.title),
-      description: post.data.description.find((content: {type: string}) => content.type === 'paragraph')?.text ?? '',
-      cover: post.data.cover.url,
+      description: (post.data.description.find((content: {type: string}) => content.type === 'paragraph') as {text?: string})?.text ?? '',
+      cover: (post.data.cover as { url?: string}).url ?? '',
       updateAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: 'long',
@@ -112,7 +162,9 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      posts
+      posts,
+      page: resp.page,
+      totalPage: resp.total_pages
     },
     revalidate: 60 * 30 // Atualiza a cada 30 minutos
   }
