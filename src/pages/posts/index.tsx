@@ -11,6 +11,7 @@ import { FiChevronLeft, FiChevronsLeft, FiChevronRight, FiChevronsRight } from '
 
 import { getPrismicClient } from '../../services/prismic';
 import * as PrismicR from '@prismicio/client';
+import { useState } from 'react';
 
 type Post = {
   slug: string;
@@ -24,7 +25,10 @@ interface PostsProps{
   posts: Post[];
 }
 
-export default function Posts({posts}: PostsProps){
+export default function Posts({posts: postsBlog}: PostsProps){
+
+  const [posts, setPosts] = useState(postsBlog || []);
+
   return (
     <>
       <Head>
@@ -33,21 +37,25 @@ export default function Posts({posts}: PostsProps){
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <Link legacyBehavior href='/'>
-            <a>
+          {posts.map(post => (
+            <Link key={post.slug} legacyBehavior href={`/posts/${post.slug}`}>
+            <a key={post.slug}>
               <Image
-                src={thumbImg}
-                alt='Post titulo 1'
+                src={post.cover}
+                alt={post.title}
                 width={720}
                 height={410}
                 quality={100}
+                placeholder='blur'
+                blurDataURL={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="}
               />
-              <strong>Criando meu primeiro aplicativo</strong>
-              <time>14 JULHO 2021</time>
-              <p>Hoje vamos criar o controle de mostrar a senha no input, uma opção para os nossos formulários de cadastro e login. Mas chega de conversa e bora pro código junto comigo que o vídeo está show de bola!</p>
+              <strong>{post.title}</strong>
+              <time>{post.updateAt}</time>
+              <p>{post.description}</p>
             </a>
           </Link>
 
+          ))}
           <div className={styles.buttonNavigate}>
             <div>
               <button>
