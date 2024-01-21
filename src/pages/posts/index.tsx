@@ -41,7 +41,7 @@ export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
         direction: 'desc',
       },
       fetchLinks: ['post.title', 'post.cover', 'post.description'],
-      pageSize: 3,
+      pageSize: 2,
       page: pageNumber,
     });
 
