@@ -42,14 +42,14 @@ export default function Post({ post }: PostProps){
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({req, params}) => { //params: consigo acessar os dados contidos na URL
+export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
   try {
-    const { slug } = params || {}; // retorna um objeto vazio {} se params for undefined
+    const { slug } = params || {};
     const prismic = await getPrismicClient(req);
 
     const resp = await prismic.getByUID('post', String(slug), {});
 
-    if(!resp){ // ! : se ele NÃO obter a response então
+    if(!resp){
       return{
         redirect:{
           destination: '/posts',
