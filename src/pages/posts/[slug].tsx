@@ -2,6 +2,9 @@ import { GetServerSideProps } from 'next';
 import * as PrismicR from '@prismicio/client';
 import styles from './post.module.scss';
 import { getPrismicClient } from '../../services/prismic';
+import Head from 'next/head';
+import Image from 'next/image'
+
 
 interface PostProps{
   post: {
@@ -14,19 +17,34 @@ interface PostProps{
 }
 
 export default function Post({ post }: PostProps){
-
-  console.log(post);
-
   return(
-    <div>
-      <h2>DETALHE DO POST</h2>
-    </div>
+    <>
+      <Head>
+        <title>{post.title}</title>
+      </Head>
+      <main className={styles.container}>
+        <article className={styles.post}>
+          <Image
+            src={post.cover}
+            width={720}
+            height={410}
+            alt={post.title}
+            placeholder='blur'
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="
+          />
+
+          <h1>{post.title}</h1>
+          <time>{post.updatedAt}</time>
+          <div className={styles.postContent} dangerouslySetInnerHTML={{ __html: post.description }}></div>
+        </article>
+      </main>
+    </>
   )
 }
 
 export const getServerSideProps: GetServerSideProps = async ({req, params}) => { //params: consigo acessar os dados contidos na URL
   try {
-    const { slug } = params;
+    const { slug } = params || {}; // retorna um objeto vazio {} se params for undefined
     const prismic = await getPrismicClient(req);
 
     const resp = await prismic.getByUID('post', String(slug), {});

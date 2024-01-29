@@ -92,7 +92,7 @@ export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
                 height={410}
                 quality={100}
                 placeholder='blur'
-                blurDataURL={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="}
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="
               />
               <strong>{post.title}</strong>
               <time>{post.updateAt}</time>
