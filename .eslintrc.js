@@ -6,10 +6,10 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'plugin:react/recommended',
+    'plugin:@next/next/recommended',
   ],
   globals: {
     Atomics: 'readonly',
@@ -25,6 +25,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
   },
+  root: true,
   settings: {
     react: {
       version: 'detect',
