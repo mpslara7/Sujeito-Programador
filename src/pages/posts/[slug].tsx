@@ -3,21 +3,20 @@ import * as PrismicR from '@prismicio/client';
 import styles from './post.module.scss';
 import { getPrismicClient } from '../../services/prismic';
 import Head from 'next/head';
-import Image from 'next/image'
+import Image from 'next/image';
 
-
-interface PostProps{
+interface PostProps {
   post: {
     slug: string;
     title: string;
     description: string;
     cover: string;
     updatedAt: string;
-  }
+  };
 }
 
-export default function Post({ post }: PostProps){
-  return(
+export default function Post({ post }: PostProps) {
+  return (
     <>
       <Head>
         <title>{post.title}</title>
@@ -29,29 +28,32 @@ export default function Post({ post }: PostProps){
             width={720}
             height={410}
             alt={post.title}
-            placeholder='blur'
+            placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="
           />
 
           <h1>{post.title}</h1>
           <time>{post.updatedAt}</time>
-          <div className={styles.postContent} dangerouslySetInnerHTML={{ __html: post.description }}></div>
+          <div
+            className={styles.postContent}
+            dangerouslySetInnerHTML={{ __html: post.description }}
+          ></div>
         </article>
       </main>
     </>
-  )
+  );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
     const { slug } = params || {};
-    const prismic = await getPrismicClient(req);
+    const prismic = await getPrismicClient();
 
     const resp = await prismic.getByUID('post', String(slug), {});
 
-    if(!resp){
-      return{
-        redirect:{
+    if (!resp) {
+      return {
+        redirect: {
           destination: '/posts',
           permanent: false,
         },
@@ -63,20 +65,23 @@ export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
       title: PrismicR.asText(resp.data.title),
       description: PrismicR.asHTML(resp.data.description),
       cover: resp.data.cover.url,
-      updatedAt: new Date(resp.last_publication_date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      })
+      updatedAt: new Date(resp.last_publication_date).toLocaleDateString(
+        'pt-BR',
+        {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        },
+      ),
     };
 
     return {
-      props:{
+      props: {
         post,
-      }
-    }
+      },
+    };
   } catch (error) {
-    console.error("Erro em getServerSideProps:", error);
+    console.error('Erro em getServerSideProps:', error);
 
     return {
       redirect: {

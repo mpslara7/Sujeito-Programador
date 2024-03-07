@@ -1,9 +1,9 @@
-import { GetStaticProps } from "next";
+import { GetStaticProps } from 'next';
 
 import Head from 'next/head';
 import styles from './styles.module.scss';
 
-import {getPrismicClient} from '../../services/prismic';
+import { getPrismicClient } from '../../services/prismic';
 import * as PrismicR from '@prismicio/client';
 
 import { FaYoutube, FaInstagram, FaLinkedin, FaFacebook } from 'react-icons/fa';
@@ -16,14 +16,14 @@ type Content = {
   instagram: string;
   youtube: string;
   linkedin: string;
-}
+};
 
-interface ContentProps{
+interface ContentProps {
   content: Content;
 }
 
-export default function Sobre({ content }: ContentProps ){
-  return(
+export default function Sobre({ content }: ContentProps) {
+  return (
     <>
       <Head>
         <title>Quem somos? | Sujeito Programador</title>
@@ -35,44 +35,33 @@ export default function Sobre({ content }: ContentProps ){
             <p>{content.description}</p>
 
             <a href={content.youtube}>
-              <FaYoutube size={40}/>
+              <FaYoutube size={40} />
             </a>
             <a href={content.instagram}>
-              <FaInstagram size={40}/>
+              <FaInstagram size={40} />
             </a>
             <a href={content.facebook}>
-              <FaFacebook size={40}/>
+              <FaFacebook size={40} />
             </a>
             <a href={content.linkedin}>
-              <FaLinkedin size={40}/>
+              <FaLinkedin size={40} />
             </a>
           </section>
 
-          <img
-            src={content.banner}
-            alt="Sujeito Programador"
-          />
-
+          <img src={content.banner} alt="Sujeito Programador" />
         </div>
       </main>
     </>
-  )
+  );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = await getPrismicClient();
 
-  const resp = await prismic.getByType('about', {})
+  const resp = await prismic.getByType('about', {});
 
-  const {
-    title,
-    description,
-    banner,
-    facebook,
-    instagram,
-    youtube,
-    linkedin
-  } = resp.results[0].data;
+  const { title, description, banner, facebook, instagram, youtube, linkedin } =
+    resp.results[0].data;
 
   const content = {
     title: PrismicR.asText(title),
@@ -81,13 +70,13 @@ export const getStaticProps: GetStaticProps = async () => {
     facebook: facebook.url,
     instagram: instagram.url,
     youtube: youtube.url,
-    linkedin: linkedin.url
-  }
+    linkedin: linkedin.url,
+  };
 
-  return{
-    props:{
-      content
+  return {
+    props: {
+      content,
     },
-    revalidate: 60 * 15
-  }
-}
+    revalidate: 60 * 15,
+  };
+};

@@ -1,13 +1,17 @@
 import { GetStaticProps } from 'next';
-import Head from 'next/head'
+import Head from 'next/head';
 
-import Link from 'next/link'
-import styles from './styles.module.scss'
+import Link from 'next/link';
+import styles from './styles.module.scss';
 
-import Image from 'next/image'
-import thumbImg from '../../../public/images/thumb.png'
+import Image from 'next/image';
 
-import { FiChevronLeft, FiChevronsLeft, FiChevronRight, FiChevronsRight } from 'react-icons/fi'
+import {
+  FiChevronLeft,
+  FiChevronsLeft,
+  FiChevronRight,
+  FiChevronsRight,
+} from 'react-icons/fi';
 
 import { getPrismicClient } from '../../services/prismic';
 import * as PrismicR from '@prismicio/client';
@@ -19,20 +23,23 @@ type Post = {
   cover: string;
   description: string;
   updateAt: string;
-}
+};
 
-interface PostsProps{
+interface PostsProps {
   posts: Post[];
   page: string;
   totalPage: string;
 }
 
-export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
-
+export default function Posts({
+  posts: postsBlog,
+  page,
+  totalPage,
+}: PostsProps) {
   const [currentPage, setCurrentPage] = useState(Number(page));
   const [posts, setPosts] = useState(postsBlog || []);
 
-  async function reqPost(pageNumber: number){
+  async function reqPost(pageNumber: number) {
     const prismic = await getPrismicClient();
 
     const resp = await prismic.getByType('post', {
@@ -51,28 +58,35 @@ export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
   const navigatePage = async (pageNumber: number) => {
     const resp = await reqPost(pageNumber);
 
-    if(resp.results.length === 0){
+    if (resp.results.length === 0) {
       return;
     }
 
-    const getPosts = resp.results.map(post => {
+    const getPosts = resp.results.map((post) => {
       return {
         slug: post.uid as string,
         title: PrismicR.asText(post.data.title) as string,
-        description: (post.data.description.find((content: {type: string}) => content.type === 'paragraph') as {text?: string})?.text ?? '',
-        cover: (post.data.cover as { url?: string}).url ?? '',
-        updateAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        })
-      }
-    })
+        description:
+          (
+            post.data.description.find(
+              (content: { type: string }) => content.type === 'paragraph',
+            ) as { text?: string }
+          )?.text ?? '',
+        cover: (post.data.cover as { url?: string }).url ?? '',
+        updateAt: new Date(post.last_publication_date).toLocaleDateString(
+          'pt-BR',
+          {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          },
+        ),
+      };
+    });
 
     setCurrentPage(pageNumber);
     setPosts(getPosts);
-
-  }
+  };
 
   return (
     <>
@@ -82,56 +96,54 @@ export default function Posts({posts: postsBlog, page, totalPage}: PostsProps){
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          {posts.map(post => (
+          {posts.map((post) => (
             <Link key={post.slug} legacyBehavior href={`/posts/${post.slug}`}>
-            <a key={post.slug}>
-              <Image
-                src={post.cover}
-                alt={post.title}
-                width={720}
-                height={410}
-                quality={100}
-                placeholder='blur'
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="
-              />
-              <strong>{post.title}</strong>
-              <time>{post.updateAt}</time>
-              <p>{post.description}</p>
-            </a>
-          </Link>
+              <a key={post.slug}>
+                <Image
+                  src={post.cover}
+                  alt={post.title}
+                  width={720}
+                  height={410}
+                  quality={100}
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8fWrXVgAHvQMGyRlDzQAAAABJRU5ErkJggg=="
+                />
+                <strong>{post.title}</strong>
+                <time>{post.updateAt}</time>
+                <p>{post.description}</p>
+              </a>
+            </Link>
           ))}
 
           <div className={styles.buttonNavigate}>
-            { Number(currentPage) >= 2 && (
+            {Number(currentPage) >= 2 && (
               <div>
-                <button onClick={ () => navigatePage(1)}>
-                  <FiChevronLeft size={25} color='#fff'/>
+                <button onClick={() => navigatePage(1)}>
+                  <FiChevronLeft size={25} color="#fff" />
                 </button>
-                <button onClick={ () => navigatePage(Number(currentPage - 1)) }>
-                  <FiChevronsLeft size={25} color='#fff'/>
+                <button onClick={() => navigatePage(Number(currentPage - 1))}>
+                  <FiChevronsLeft size={25} color="#fff" />
                 </button>
               </div>
             )}
 
-            { Number(currentPage) < Number(totalPage) && (
+            {Number(currentPage) < Number(totalPage) && (
               <div>
-                <button onClick={ () => navigatePage(Number(currentPage + 1)) }>
-                  <FiChevronRight size={25} color='#fff'/>
+                <button onClick={() => navigatePage(Number(currentPage + 1))}>
+                  <FiChevronRight size={25} color="#fff" />
                 </button>
 
-                <button onClick={ () => navigatePage(Number(totalPage))}>
-                  <FiChevronsRight size={25} color='#fff'/>
+                <button onClick={() => navigatePage(Number(totalPage))}>
+                  <FiChevronsRight size={25} color="#fff" />
                 </button>
-            </div>
+              </div>
             )}
-
           </div>
         </div>
       </main>
     </>
-  )
+  );
 }
-
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = await getPrismicClient();
@@ -143,29 +155,37 @@ export const getStaticProps: GetStaticProps = async () => {
     },
     fetchLinks: ['post.title', 'post.cover', 'post.description'],
     pageSize: 2,
-    page: 1
+    page: 1,
   });
 
-  const posts = resp.results.map(post => {
+  const posts = resp.results.map((post) => {
     return {
       slug: post.uid,
       title: PrismicR.asText(post.data.title),
-      description: (post.data.description.find((content: {type: string}) => content.type === 'paragraph') as {text?: string})?.text ?? '',
-      cover: (post.data.cover as { url?: string}).url ?? '',
-      updateAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      })
-    }
-  })
+      description:
+        (
+          post.data.description.find(
+            (content: { type: string }) => content.type === 'paragraph',
+          ) as { text?: string }
+        )?.text ?? '',
+      cover: (post.data.cover as { url?: string }).url ?? '',
+      updateAt: new Date(post.last_publication_date).toLocaleDateString(
+        'pt-BR',
+        {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        },
+      ),
+    };
+  });
 
   return {
     props: {
       posts,
       page: resp.page,
-      totalPage: resp.total_pages
+      totalPage: resp.total_pages,
     },
-    revalidate: 60 * 30 // Atualiza a cada 30 minutos
-  }
-}
+    revalidate: 60 * 30, // Atualiza a cada 30 minutos
+  };
+};
